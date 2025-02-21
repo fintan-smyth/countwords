@@ -213,9 +213,10 @@ int	main(int argc, char **argv)
 	tree_arr = ft_calloc(no_words + 1, sizeof(t_tree *));
 	ft_traverse_tree(tree, IN_ORD, (void (*)(t_tree *, void *))vectorize_tree, tree_arr);
 	ft_printf("Count\tWord\n------------\n");
-	int i = no_words - 1;
+	// int i = no_words - 1;
 	// while (tree_arr[i] != NULL)
 	// 	print_wc_node(tree_arr[i++], &digits);
+	int i = no_words - 1;
 	while (i >= 0)
 		print_wc_node(tree_arr[i--], &digits);
 	// ft_traverse_tree(tree, IN_ORD, print_wc_node, &digits);
