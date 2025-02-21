@@ -152,27 +152,54 @@ void	process_line(t_tree **tree, char *line, int *max)
 // 	ft_lstclear(&lines, free);
 // }
 
-int	main(int argc, char **argv)
+void	count_treenodes(t_tree *tree, int *count)
 {
-	int			fd;
-	t_tree		*tree;
-	char		*buf;
-	int			max;
-	int			digits;
-	size_t		size;
-	struct stat	statbuf;
+	(void)tree;
+	(*count)++;
+}
+
+int	process_args(int argc, char **argv)
+{
+	int	fd;
 
 	if (argc > 2)
-		return (0);
+		return (-1);
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);
 		if (fd < 0)
-			return (0);
+			return (-1);
 	}
 	else
-		// return (0);
 		fd = 0;
+	return (fd);
+}
+
+void	vectorize_tree(t_tree *node, t_tree **tree_arr)
+{
+	int	i;
+
+	i = 0;
+	while (tree_arr[i] != NULL)
+		i++;
+	tree_arr[i] = node;
+}
+
+int	main(int argc, char **argv)
+{
+	int			fd;
+	t_tree		*tree;
+	t_tree		**tree_arr;
+	char		*buf;
+	int			max;
+	int			digits;
+	int			no_words;
+	size_t		size;
+	struct stat	statbuf;
+
+	fd = process_args(argc, argv);
+	if (fd < 0)
+		return (1);
 	fstat(fd, &statbuf);
 	size = statbuf.st_size;
 	buf = ft_calloc(1, size + 1);
@@ -181,7 +208,17 @@ int	main(int argc, char **argv)
 	max = 0;
 	process_line(&tree, buf, &max);
 	digits = count_digits(max);
+	no_words = 0;
+	ft_traverse_tree(tree, PRE_ORD, (void (*)(t_tree *, void *))count_treenodes, &no_words);
+	tree_arr = ft_calloc(no_words + 1, sizeof(t_tree *));
+	ft_traverse_tree(tree, IN_ORD, (void (*)(t_tree *, void *))vectorize_tree, tree_arr);
 	ft_printf("Count\tWord\n------------\n");
-	ft_traverse_tree(tree, IN_ORD, print_wc_node, &digits);
+	int i = no_words - 1;
+	// while (tree_arr[i] != NULL)
+	// 	print_wc_node(tree_arr[i++], &digits);
+	while (i >= 0)
+		print_wc_node(tree_arr[i--], &digits);
+	// ft_traverse_tree(tree, IN_ORD, print_wc_node, &digits);
+	ft_printf("No. words:\t%d\n", no_words);
 	ft_tree_clear(tree, free_wc);
 }
