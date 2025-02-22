@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft/libft.h"
 #include "libft/libft.h"
 #include <fcntl.h>
 #include <unistd.h>
@@ -70,6 +69,7 @@ void	add_word(t_tree **tree, char *word, int *max)
 {
 	int	cmp;
 
+	(void)max;
 	if (*tree == NULL)
 	{
 		*tree = ft_tree_new(new_wc(word));
@@ -79,8 +79,8 @@ void	add_word(t_tree **tree, char *word, int *max)
 	if (cmp == 0)
 	{
 		((t_wc *)(*tree)->content)->count++;
-		if (((t_wc *)(*tree)->content)->count > *max)
-			*max = ((t_wc *)(*tree)->content)->count;
+		// if (((t_wc *)(*tree)->content)->count > *max)
+		// 	*max = ((t_wc *)(*tree)->content)->count;
 	}
 	else if (cmp < 0)
 		add_word(&(*tree)->left, word, max);
@@ -185,6 +185,16 @@ void	vectorize_tree(t_tree *node, t_tree **tree_arr)
 	tree_arr[i] = node;
 }
 
+int	wc_cmp_num(void *node1, void *node2)
+{
+	t_wc	*wc1;
+	t_wc	*wc2;
+
+	wc1 = ((t_wc *)((t_tree *)node1)->content);
+	wc2 = ((t_wc *)((t_tree *)node2)->content);
+	return (wc2->count - wc1->count);
+}
+
 int	main(int argc, char **argv)
 {
 	int			fd;
@@ -212,13 +222,11 @@ int	main(int argc, char **argv)
 	ft_traverse_tree(tree, PRE_ORD, (void (*)(t_tree *, void *))count_treenodes, &no_words);
 	tree_arr = ft_calloc(no_words + 1, sizeof(t_tree *));
 	ft_traverse_tree(tree, IN_ORD, (void (*)(t_tree *, void *))vectorize_tree, tree_arr);
+	ft_qsort((void **)tree_arr, 0, no_words - 1, wc_cmp_num);
 	ft_printf("Count\tWord\n------------\n");
-	// int i = no_words - 1;
-	// while (tree_arr[i] != NULL)
-	// 	print_wc_node(tree_arr[i++], &digits);
-	int i = no_words - 1;
-	while (i >= 0)
-		print_wc_node(tree_arr[i--], &digits);
+	int i = 0;
+	while (tree_arr[i] != NULL)
+		print_wc_node(tree_arr[i++], &digits);
 	// ft_traverse_tree(tree, IN_ORD, print_wc_node, &digits);
 	ft_printf("No. words:\t%d\n", no_words);
 	ft_tree_clear(tree, free_wc);
