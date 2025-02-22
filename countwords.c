@@ -6,7 +6,7 @@
 /*   By: fsmyth <fsmyth@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:47:54 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/02/21 18:31:48 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/02/22 14:58:56 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,11 @@ int	count_digits(int num)
 	return (digits);
 }
 
-void	print_wc_node(t_tree *node, void *digitsptr)
+void	print_wc_node(t_wc *wordcount, void *digitsptr)
 {
-	t_wc	*wordcount;
 	int		digits;
 	
 	digits = *(int *)digitsptr;
-	wordcount = (t_wc *)node->content;
 	printf("%*d\t%s\n", digits, wordcount->count, wordcount->word);
 }
 
@@ -110,54 +108,6 @@ void	process_line(t_tree **tree, char *line, int *max)
 	}
 }
 
-// int	main(int argc, char **argv)
-// {
-// 	int		fd;
-// 	char	*line;
-// 	t_tree	*tree;
-// 	t_list	*lines;
-// 	t_list	*current;
-// 	int		max;
-// 	int		digits;
-//
-// 	if (argc > 2)
-// 		return (0);
-// 	if (argc == 2)
-// 	{
-// 		fd = open(argv[1], O_RDONLY);
-// 		if (fd < 0)
-// 			return (0);
-// 	}
-// 	else
-// 		fd = 0;
-// 	lines = NULL;
-// 	line = get_next_line(fd);
-// 	while (line != NULL)
-// 	{
-// 		ft_lstadd_back(&lines, ft_lstnew(line));
-// 		line = get_next_line(fd);
-// 	}
-// 	// exit(0);
-// 	tree = NULL;
-// 	current = lines;
-// 	max = 0;
-// 	while (current != NULL)
-// 	{
-// 		process_line(&tree, current->content, &max);
-// 		current = current->next;
-// 	}
-// 	digits = count_digits(max);
-// 	ft_printf("Count\tWord\n------------\n");
-// 	ft_traverse_tree(tree, IN_ORD, print_wc_node, &digits);
-// 	ft_lstclear(&lines, free);
-// }
-
-void	count_treenodes(t_tree *tree, int *count)
-{
-	(void)tree;
-	(*count)++;
-}
-
 int	process_args(int argc, char **argv)
 {
 	int	fd;
@@ -175,23 +125,13 @@ int	process_args(int argc, char **argv)
 	return (fd);
 }
 
-void	vectorize_tree(t_tree *node, t_tree **tree_arr)
-{
-	int	i;
-
-	i = 0;
-	while (tree_arr[i] != NULL)
-		i++;
-	tree_arr[i] = node;
-}
-
 int	wc_cmp_num(void *node1, void *node2)
 {
 	t_wc	*wc1;
 	t_wc	*wc2;
 
-	wc1 = ((t_wc *)((t_tree *)node1)->content);
-	wc2 = ((t_wc *)((t_tree *)node2)->content);
+	wc1 = (t_wc *)node1;
+	wc2 = (t_wc *)node2;
 	return (wc2->count - wc1->count);
 }
 
@@ -199,7 +139,7 @@ int	main(int argc, char **argv)
 {
 	int			fd;
 	t_tree		*tree;
-	t_tree		**tree_arr;
+	t_wc		**wc_arr;
 	char		*buf;
 	int			max;
 	int			digits;
@@ -217,17 +157,16 @@ int	main(int argc, char **argv)
 	tree = NULL;
 	max = 0;
 	process_line(&tree, buf, &max);
+	free(buf);
 	digits = count_digits(max);
-	no_words = 0;
-	ft_traverse_tree(tree, PRE_ORD, (void (*)(t_tree *, void *))count_treenodes, &no_words);
-	tree_arr = ft_calloc(no_words + 1, sizeof(t_tree *));
-	ft_traverse_tree(tree, IN_ORD, (void (*)(t_tree *, void *))vectorize_tree, tree_arr);
-	ft_qsort((void **)tree_arr, 0, no_words - 1, wc_cmp_num);
+	no_words = ft_treesize(tree);
+	wc_arr = (t_wc **)ft_tree_to_arr(tree);
+	ft_qsort((void **)wc_arr, 0, no_words - 1, wc_cmp_num);
 	ft_printf("Count\tWord\n------------\n");
 	int i = 0;
-	while (tree_arr[i] != NULL)
-		print_wc_node(tree_arr[i++], &digits);
-	// ft_traverse_tree(tree, IN_ORD, print_wc_node, &digits);
+	while (wc_arr[i] != NULL)
+		print_wc_node(wc_arr[i++], &digits);
 	ft_printf("No. words:\t%d\n", no_words);
 	ft_tree_clear(tree, free_wc);
+	free(wc_arr);
 }
