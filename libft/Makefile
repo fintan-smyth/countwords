@@ -60,6 +60,7 @@ SRC = ft_isalpha.c \
 	  ft_strtol.c \
 	  ft_extend_line.c \
 	  ft_tree.c \
+	  ft_tree_funcs.c \
 	  ft_realloc.c \
 
 OBJ = $(SRC:.c=.o)

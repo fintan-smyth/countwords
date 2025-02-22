@@ -6,7 +6,7 @@
 /*   By: fsmyth <fsmyth@student.42london.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/20 14:31:06 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/02/20 14:46:09 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/02/22 14:29:18 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	ft_free_treenode(t_tree *node, void (*del)(void *))
 }
 
 void	ft_traverse_tree(t_tree *tree, int order,
-			void (*f)(t_tree *, void *), void *data)
+			void (*f)(void *, void *), void *data)
 {
 	if (tree == NULL)
 		return ;
@@ -48,5 +48,5 @@ void	ft_traverse_tree(t_tree *tree, int order,
 void	ft_tree_clear(t_tree *tree, void (*del)(void *))
 {
 	ft_traverse_tree(tree, PST_ORD,
-		(void (*)(t_tree *, void *))ft_free_treenode, del);
+		(void (*)(void *, void *))ft_free_treenode, del);
 }

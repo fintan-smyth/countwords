@@ -6,7 +6,7 @@
 /*   By: fsmyth <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 12:19:13 by fsmyth            #+#    #+#             */
-/*   Updated: 2025/02/21 14:08:12 by fsmyth           ###   ########.fr       */
+/*   Updated: 2025/02/22 14:29:11 by fsmyth           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,9 @@ void	*ft_recalloc(void *ptr, size_t old_size, size_t new_size);
 t_tree	*ft_tree_new(void *content);
 void	ft_free_treenode(t_tree *node, void (*del)(void *));
 void	ft_traverse_tree(t_tree *tree, int order,
-			void (*f)(t_tree *, void *), void *data);
+			void (*f)(void *, void *), void *data);
 void	ft_tree_clear(t_tree *tree, void (*del)(void *));
+int		ft_treesize(t_tree *tree);
+void	**ft_tree_to_arr(t_tree *tree);
 
 #endif
